@@ -77,7 +77,7 @@ app.get(
       sameSite: "lax",
     });
 
-    res.redirect("/");
+    res.redirect("/dashboard.html");
   })
 );
 

@@ -1,17 +1,27 @@
 {
   "version": 2,
+  "builds": [
+    {
+      "src": "agentlog/server/src/server.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "agentlog/dashboard/**",
+      "use": "@vercel/static"
+    }
+  ],
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "/agentlog/server/src/server.js"
+      "destination": "agentlog/server/src/server.js"
     },
     {
       "source": "/auth/(.*)",
-      "destination": "/agentlog/server/src/server.js"
+      "destination": "agentlog/server/src/server.js"
     },
     {
       "source": "/(.*)",
-      "destination": "/agentlog/dashboard/$1"
+      "destination": "agentlog/dashboard/$1"
     }
   ]
 }
