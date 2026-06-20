@@ -19,6 +19,8 @@ const app = express();
 const PORT = process.env.PORT || 4790;
 const COOKIE_SECRET = process.env.COOKIE_SECRET || "agentlog-default-secret";
 
+app.enable("trust proxy");
+
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json({ limit: "1mb" }));
 app.use(cookieParser(COOKIE_SECRET));
@@ -38,7 +40,8 @@ function wrap(handler) {
 }
 
 function getOrigin(req) {
-  return `${req.protocol}://${req.get("host")}`;
+  const proto = req.headers["x-forwarded-proto"] || req.protocol;
+  return `${proto}://${req.get("host")}`;
 }
 
 // --- GitHub OAuth --------------------------------------------------------
