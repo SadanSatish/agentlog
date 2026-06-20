@@ -40,6 +40,14 @@ SQLite instead of Postgres for now (see `docs/ARCHITECTURE.md` for the
 Postgres migration path), one scope-matching strategy (path prefixes, not
 full glob support yet).
 
+## Key Features
+
+1. **Pitfalls Board**: A centralized board segregating developer `failed_approaches` and `gotchas` in side-by-side columns to prevent double-work.
+2. **Token Telemetry**: Automatically records total input, output, and wasted tokens per repository run. Computes and logs a live token efficiency rating.
+3. **Custom MCP Tools Creator**: A no-code visual API builder to dynamically define and install custom stdio-based MCP tools using Quick Templates (GitHub Issues, IP Geolocation, etc.).
+4. **Auto-generated Repo Summarizer**: Instant onboarding tool for new agents to get structural and historic knowledge of a repo with a single command.
+5. **GitHub OAuth & Syncing**: Sync repository names and metadata with your public/private GitHub accounts for easy context sharing.
+
 ## Requirements
 
 - Node.js **22.5+** (the backend uses the built-in `node:sqlite` module —
@@ -51,7 +59,7 @@ full glob support yet).
 points at it):
 
 ```bash
-cd server
+cd agentlog/server
 npm install
 npm start
 # AgentLog server listening on http://localhost:4790
@@ -104,41 +112,42 @@ if AgentLog isn't reachable, it just skips silently.
 
 ## The MCP tools
 
-| Tool                 | What it does                                                          |
-|-----------------------|------------------------------------------------------------------------|
-| `record_decision`     | Log a decision and why it was made (architectural choice, rejected design, etc.) |
-| `log_failed_approach` | Log something that was tried and didn't work, and why                |
-| `log_gotcha`          | Log a non-obvious constraint or quirk discovered in a file/module    |
-| `query_context`       | **The read path.** Look up everything recorded for a file/module before editing it |
-| `list_recent`         | Browse the most recent entries for a repo                            |
-| `mark_stale`          | Mark an entry stale/superseded once it no longer applies             |
+| Tool                     | What it does                                                                           |
+|--------------------------|----------------------------------------------------------------------------------------|
+| `record_decision`        | Log a decision and why it was made (architectural choice, rejected design, etc.)       |
+| `log_failed_approach`    | Log something that was tried and didn't work, and why                                  |
+| `log_gotcha`             | Log a non-obvious constraint or quirk discovered in a file/module                      |
+| `query_context`          | **The read path.** Look up everything recorded for a file/module before editing it      |
+| `list_recent`            | Browse the most recent entries for a repo                                              |
+| `mark_stale`             | Mark an entry stale/superseded once it no longer applies                               |
+| `log_token_usage`        | **Automatic Telemetry.** Logs token count and wasted tokens consumed in a session      |
+| `summarize_github_repo`  | **Repo Onboarding.** Scans README, folder structure, and database stats to summarize   |
+| `fetch_github_readme`    | Fetch the raw README content of any repository                                         |
+| `list_github_files`      | List structure of any public GitHub repository                                         |
+| `fetch_github_file`      | Fetch contents of any specific file in a GitHub repository                             |
+| `search_entries`         | Query decisions, gotchas, and notes in AgentLog by text query                          |
+| `search_github_code`     | Search for patterns and keywords inside a public GitHub repository                     |
 
 A reasonable system-prompt nudge for your agent: *"Before editing a file
 you haven't touched yet this session, call `query_context` on it. After
 making a non-trivial decision or hitting a dead end, record it with
-`record_decision` or `log_failed_approach`."* Claude Code and most agents
-will pick MCP tools up on their own once the description makes the
-intent obvious — the tool descriptions in `mcp-server/src/index.js` are
-written to nudge that behavior, but an explicit project instruction
-(e.g. in `CLAUDE.md`) will make it more consistent.
+`record_decision` or `log_failed_approach`. When you are done, report the token telemetry by calling `log_token_usage`."* 
 
 ## The dashboard
 
 Browse by repo, filter by type (`decision` / `failed_approach` / `gotcha` /
 `note`) and status (`active` / `stale` / `superseded`), search titles and
 bodies, add entries manually, and mark things stale or delete them once
-they're no longer useful. No build step — open `index.html` via the backend
-or host the three static files anywhere and set
-`window.AGENTLOG_API_BASE = "https://your-agentlog-host"` before
-`app.js` loads.
+they're no longer useful.
+
+Additionally, use the **Pitfalls Board** and **Token Telemetry** views to view segregated gotchas and track token spend/waste rates live.
 
 ## Running the backend somewhere the team can reach
 
 For real team use, run `server/` somewhere persistent — a small VM, a
-container, a Fly.io/Render app, whatever you've already got. It's a single
-Node process plus a SQLite file; point `AGENTLOG_DB_PATH` at a persistent
-volume if you're containerizing it. Then every teammate's MCP config just
-points `AGENTLOG_API_URL` at that host instead of `localhost`.
+container, a Fly.io/Render app, or Vercel. It's a single Node process; point `AGENTLOG_DB_PATH` at a persistent volume if you're containerizing it.
+
+For Vercel serverless deployment, the backend automatically transitions to an in-memory SQLite store (`:memory:`) to comply with read-only environments.
 
 ## Verifying your setup
 
