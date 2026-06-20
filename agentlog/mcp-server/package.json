@@ -1,0 +1,19 @@
+{
+  "name": "agentlog-mcp",
+  "version": "0.1.0",
+  "description": "MCP server exposing AgentLog's shared agent memory as tools (record_decision, log_failed_approach, query_context, ...)",
+  "type": "module",
+  "main": "src/index.js",
+  "bin": {
+    "agentlog-mcp": "src/index.js"
+  },
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0"
+  }
+}

@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# AgentLog post-commit hook.
+# Logs every commit into AgentLog's shared timeline. Installed via
+# scripts/install-git-hook.sh — never blocks the commit if AgentLog
+# isn't running or reachable.
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+
+node "$REPO_ROOT/.agentlog/record-commit.mjs" >/dev/null 2>&1 &
+exit 0

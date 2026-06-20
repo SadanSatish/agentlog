@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/agentlog/server/src/server.js"
+    },
+    {
+      "source": "/auth/(.*)",
+      "destination": "/agentlog/server/src/server.js"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/agentlog/dashboard/$1"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "name": "agentlog-server",
+  "version": "0.1.0",
+  "description": "AgentLog backend API - shared memory layer for AI coding agents",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "cors": "^2.8.5",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^16.4.7"
+  }
+}
